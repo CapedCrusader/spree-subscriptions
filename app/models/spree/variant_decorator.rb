@@ -1,13 +1,13 @@
 module Spree
   Variant.class_eval do
-    attr_accessible :issues_number
+    # attr_accessible :num_subscription_units
 
-    before_save :set_default_isssues_number
+    before_save :set_default_num_subscription_units
 
     delegate :subscribable?, :to => :product
 
-    def set_default_isssues_number
-      self.issues_number = Spree::Subscriptions::Config.default_issues_number if !self.issues_number      
+    def set_default_num_subscription_units
+      self.num_subscription_units = SpreeSubscriptions::Config.default_num_subscription_units if !self.num_subscription_units
     end
   end
 end

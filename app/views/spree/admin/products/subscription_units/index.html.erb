@@ -1,0 +1,36 @@
+<%= render :partial => 'spree/admin/shared/product_sub_menu' %>
+
+<%= render :partial => 'spree/admin/shared/product_tabs', :locals => { :current => 'Subscription_Units' } %>
+
+<div class="toolbar" data-hook="toolbar">
+  <ul class="actions">
+    <li id="new_subscription_unit_link">
+    <%= button_link_to t(:new_subscription_unit), new_admin_subscribable_product_subscription_unit_url(@subscribable_product), { :icon => 'add', :id => 'admin_new_subscription_unit' } %>
+    </li>
+  </ul>
+  <br class="clear" />
+</div>
+
+<h1><%= t("listing_subscription_units") %></h1>
+
+<table class="index" id="listing_subscription_units">
+  <thead>
+    <tr>
+      <th><%= t(:name, :scope => 'activerecord.attributes.spree/subscription_unit') %></th>
+      <th><%= t(:shipped_at, :scope => 'activerecord.attributes.spree/subscription_unit') %></th>
+      <th data-hook="admin_subscription_units_index_header_actions"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @subscription_units.each do |subscription_unit| %>
+      <tr>
+        <td><%= link_to subscription_unit.name, admin_subscribable_product_subscription_unit_url(@subscribable_product, subscription_unit) %></td>
+        <td><%= subscription_unit.shipped? ? subscription_unit.shipped_at.to_s(:db) : t(:subscription_unit_not_shipped) %></td>
+        <td class="actions" data-hook="admin_subscription_units_index_row_actions">
+          <%= link_to_with_icon :accept, t(:ship).capitalize, admin_subscribable_product_subscription_unit_ship_path(@subscribable_product, subscription_unit), :confirm => t(:are_you_sure) if !subscription_unit.shipped? %>
+          <%= link_to_with_icon :edit,  t(:edit), edit_admin_subscribable_product_subscription_unit_url(@subscribable_product, subscription_unit), :class => 'edit' if !subscription_unit.shipped? %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

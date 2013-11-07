@@ -14,18 +14,18 @@ describe "Subscription" do
 
     context "editing a subscription" do
       before(:each) do
-        create(:product, :name => 'sport magazine', :available_on => '2011-01-06 18:21:13:', :subscribable => true)
-        create(:product, :name => 'web magazine', :available_on => '2011-01-06 18:21:13:', :subscribable => true)
+        create(:product, :name => 'sport subscribable_product', :available_on => '2011-01-06 18:21:13:', :subscribable => true)
+        create(:product, :name => 'web subscribable_product', :available_on => '2011-01-06 18:21:13:', :subscribable => true)
         create(:subscription)
         click_link "Subscriptions"
       end
 
       it "should be edited correctly" do
         within('table#listing_subscriptions tbody tr:nth-child(1)') { click_link("Edit") }
-        select "web magazine", :from => "Product"
+        select "web subscribable_product", :from => "Product"
         click_button "Update"
         page.should have_content("successfully updated!")
-        find_field('Product').find('option[selected]').text.should == "web magazine"
+        find_field('Product').find('option[selected]').text.should == "web subscribable_product"
       end
 
       context "editing customer details" do
@@ -35,7 +35,7 @@ describe "Subscription" do
           within('.sidebar') { click_link("Customer Details") }
         end
 
-        it "should be have customer details editable" do
+        it "should be have customer details editable", :js => true do
           fill_in "Email", :with => "johnnyrocket@stardustcompany.com"
           within('#shipping') do
             fill_in 'First Name', :with => "Johnny"

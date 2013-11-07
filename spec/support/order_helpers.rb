@@ -91,8 +91,8 @@ end
 def create_existing_subscription_for(email, product, remaining)
   FactoryGirl.create(:subscription,
     :email => email,
-    :magazine => product,
+    :subscribable_product => product,
     :ship_address => create(:customer_address),
-    :remaining_issues => remaining
+    :remaining_subscription_units => remaining
   )
 end

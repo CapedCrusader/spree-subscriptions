@@ -16,32 +16,32 @@ describe "Products" do
 
       visit spree.admin_path
       click_link "Products"
-      within('table.index tbody tr:nth-child(1)') { click_link "Edit" }
+      within('table.index tbody tr:nth-child(1)') { click_icon :edit }
       check('product_subscribable')
       click_button "Update"
       page.should have_content("successfully updated!")
       page.has_checked_field?('product_subscribable').should == true
     end
 
-    it "should not let choose issues number for unsuscribable product" do
+    it "should not let choose subscription_units number for unsuscribable product" do
       product = create(:base_product)
 
       visit spree.admin_path
       click_link "Products"
-      within('table.index tbody tr:nth-child(1)') { click_link "Edit" }
-      page.should_not have_content "Issues number"
+      within('table.index tbody tr:nth-child(1)') { click_icon :edit }
+      page.should_not have_content I18n.t(:num_subscription_units)
     end
 
-    it "should let choose the issues number" do
+    it "should let choose the subscription_units number" do
       product = create(:base_product, :subscribable => true)
 
       visit spree.admin_path
       click_link "Products"
-      within('table.index tbody tr:nth-child(1)') { click_link "Edit" }
-      fill_in "Issues number", :with => "4"
+      within('table.index tbody tr:nth-child(1)') { click_icon :edit }
+      fill_in I18n.t(:num_subscription_units), :with => "4"
       click_button "Update"
       page.should have_content("successfully updated!")
-      find_field("Issues number").value.should == "4"
+      find_field(I18n.t(:num_subscription_units)).value.should == "4"
     end
   end
 end

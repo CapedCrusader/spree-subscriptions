@@ -1,23 +1,23 @@
 <%= render :partial => 'spree/admin/shared/product_sub_menu' %>
 
-<%= render :partial => 'spree/admin/shared/product_tabs', :locals => { :current => 'Issues' } %>
+<%= render :partial => 'spree/admin/shared/product_tabs', :locals => { :current => 'Subscription_Units' } %>
 
-<div data-hook="admin_product_issue_header">
-  <h2><%= @issue.name %></h2>
+<div data-hook="admin_product_subscription_unit_header">
+  <h2><%= @subscription_unit.name %></h2>
 </div>
 
-<% if @issue.magazine_issue %>
-  <%= render 'magazine_issue', :product => @issue.magazine_issue %>
+<% if @subscription_unit.subscribable_product_subscription_unit %>
+  <%= render 'subscribable_product_subscription_unit', :product => @subscription_unit.subscribable_product_subscription_unit %>
 <% end %>
 
-<div class="toolbar" data-hook="admin_issue_show_buttons">
-  <%= button_link_to t(:ship), admin_magazine_issue_ship_path(@product, @issue), :icon => 'accept', :confirm => t(:are_you_sure) if !@issue.shipped? %>
-  <%= button_link_to t(:print), admin_magazine_issue_path(@product, @issue, :format => :pdf), :icon => 'pdf' %>
+<div class="toolbar" data-hook="admin_subscription_unit_show_buttons">
+  <%= button_link_to t(:ship), admin_subscribable_product_subscription_unit_ship_path(@product, @subscription_unit), :icon => 'accept', :confirm => t(:are_you_sure) if !@subscription_unit.shipped? %>
+  <%= button_link_to t(:print), admin_subscribable_product_subscription_unit_path(@product, @subscription_unit, :format => :pdf), :icon => 'pdf' %>
 </div>
 <br class="clear">
 <br>
 
-<h1><%= @issue.shipped? ? t(:shipped_to) : t(:subscribed) %></h1>
+<h1><%= @subscription_unit.shipped? ? t(:shipped_to) : t(:subscribed) %></h1>
 
 <table class="index" id="subscriptions_listing">
   <thead data-hook="admin_subscriptions_index_headers">

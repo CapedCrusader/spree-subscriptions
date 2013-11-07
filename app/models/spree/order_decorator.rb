@@ -6,8 +6,8 @@ module Spree
           Subscription.subscribe!(
             :email => self.email, 
             :ship_address => self.ship_address,
-            :magazine => line_item.variant.product,
-            :remaining_issues => line_item.variant.issues_number
+            :subscribable_product => line_item.variant.product,
+            :remaining_subscription_units => line_item.variant.num_subscription_units
           )
         end
       end

@@ -1,71 +1,71 @@
 require 'spec_helper'
 
 describe Spree::Subscription do
-  it "should have shipped issues" do
+  it "should have shipped subscription_units" do
     subscription = build(:subscription)
-    subscription.should respond_to(:shipped_issues)
+    subscription.should respond_to(:shipped_subscription_units)
   end
 
   context "when shipping subscriptions" do
     let(:subscription) { create(:paid_subscription) }
-    let(:issue) { create(:issue, :magazine => subscription.magazine) }
+    let(:subscription_unit) { create(:subscription_unit, :subscribable_product => subscription.subscribable_product) }
 
-    it "should ship issues inside a transaction" do
+    it "should ship subscription_units inside a transaction" do
       subscription.should_receive :transaction
-      subscription.ship!(issue)
+      subscription.ship!(subscription_unit)
     end
 
-    it "should not reship an issue already shipped" do
-      subscription.ship!(issue)
-      expect{ subscription.ship!(issue) }.not_to change(subscription.shipped_issues, :count)
+    it "should not reship an subscription_unit already shipped" do
+      subscription.ship!(subscription_unit)
+      expect{ subscription.ship!(subscription_unit) }.not_to change(subscription.shipped_subscription_units, :count)
     end
 
     it "should have a method to know if it has been shipped" do
-      subscription.shipped?(issue).should be_false
-      subscription.ship!(issue)
-      subscription.shipped?(issue).should be_true
+      subscription.shipped?(subscription_unit).should be_false
+      subscription.ship!(subscription_unit)
+      subscription.shipped?(subscription_unit).should be_true
     end
 
-    it "should decrease remaining issues if subscription sent" do
-      expect{ subscription.ship!(issue) }.to change(subscription, :remaining_issues).by(-1)
+    it "should decrease remaining subscription_units if subscription sent" do
+      expect{ subscription.ship!(subscription_unit) }.to change(subscription, :remaining_subscription_units).by(-1)
     end
 
-    it "should not decrease remaining issues if subscription not sent" do
-      subscription.update_attribute(:remaining_issues, 0)
-      expect{ subscription.ship!(issue) }.not_to change(subscription, :remaining_issues)
+    it "should not decrease remaining subscription_units if subscription not sent" do
+      subscription.update_attribute(:remaining_subscription_units, 0)
+      expect{ subscription.ship!(subscription_unit) }.not_to change(subscription, :remaining_subscription_units)
     end
   end
 
   context "when a subscription is ending" do
     let(:subscription) { create(:ending_subscription) }
-    let(:issue) { create(:issue, :magazine => subscription.magazine) }
+    let(:subscription_unit) { create(:subscription_unit, :subscribable_product => subscription.subscribable_product) }
 
     context "without delayed_job" do
       before(:all) do
-        Spree::Subscriptions::Config.use_delayed_job = false
+        SpreeSubscriptions::Config.use_delayed_job = false
       end
 
       before(:each) do
         ActionMailer::Base.deliveries = []
       end
 
-      it "should send an email when the subscription is left with one issue" do
-        expect{ subscription.ship!(issue) }.to change(ActionMailer::Base.deliveries, :count).by(1)
+      it "should send an email when the subscription is left with one subscription_unit" do
+        expect{ subscription.ship!(subscription_unit) }.to change(ActionMailer::Base.deliveries, :count).by(1)
       end
 
-      it "should send an email when the subscription is left with zero issues" do
-        expect{ subscription.ship!(issue) }.to change(ActionMailer::Base.deliveries, :count).by(1)
+      it "should send an email when the subscription is left with zero subscription_units" do
+        expect{ subscription.ship!(subscription_unit) }.to change(ActionMailer::Base.deliveries, :count).by(1)
       end
 
-      it "should not resend email when the subscription is already at zero issues" do
+      it "should not resend email when the subscription is already at zero subscription_units" do
         subscription.stub(:shipped?).and_return(true)
-        expect{ subscription.ship!(issue) }.not_to change(ActionMailer::Base.deliveries, :count)
+        expect{ subscription.ship!(subscription_unit) }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
 
     context "with delayed_job" do
       before(:all) do
-        Spree::Subscriptions::Config.use_delayed_job = true
+        SpreeSubscriptions::Config.use_delayed_job = true
         Spree::SubscriptionMailer.stub(:delay).and_return(Spree::SubscriptionMailer)
       end
 
@@ -79,12 +79,12 @@ describe Spree::Subscription do
 
   context "when adding a subscription" do
     it "should be valid if product is subscribable" do
-      subscription = build(:subscription, :magazine => create(:subscribable_product))
+      subscription = build(:subscription, :subscribable_product => create(:subscribable_product))
       subscription.should be_valid
     end
 
     it "should not be valid if product is not subscribable" do
-      subscription = build(:subscription, :magazine => create(:base_product))
+      subscription = build(:subscription, :subscribable_product => create(:base_product))
       subscription.should_not be_valid
     end
   end
@@ -92,14 +92,14 @@ describe Spree::Subscription do
   context "when renewing a subscription" do
     let(:subscription) { create(:paid_subscription) }
 
-    it "should update remaining issues" do
+    it "should update remaining subscription_units" do
       renewal = Spree::Subscription.subscribe!(
         :email => subscription.email,
         :ship_address => subscription.ship_address,
-        :magazine => subscription.magazine,
-        :remaining_issues => 5
+        :subscribable_product => subscription.subscribable_product,
+        :remaining_subscription_units => 5
       )
-      renewal.remaining_issues.should == 10
+      renewal.remaining_subscription_units.should == 10
     end
 
     it "should update ship address with latest ship address" do
@@ -107,8 +107,8 @@ describe Spree::Subscription do
       renewal = Spree::Subscription.subscribe!(
         :email => subscription.email,
         :ship_address => new_ship_address,
-        :magazine => subscription.magazine,
-        :remaining_issues => 5
+        :subscribable_product => subscription.subscribable_product,
+        :remaining_subscription_units => 5
       )
       subscription.ship_address.id.should_not == renewal.ship_address.id
     end
@@ -123,8 +123,8 @@ describe Spree::Subscription do
       end
 
       it "should not be created before order completetion" do
-        magazine = order.line_items.first.variant.product
-        subscription = Spree::Subscription.where(:magazine_id => magazine.id).first
+        subscribable_product = order.line_items.first.variant.product
+        subscription = Spree::Subscription.where(:subscribable_product_id => subscribable_product.id).first
         subscription.should be_nil
       end
     end
@@ -140,7 +140,7 @@ describe Spree::Subscription do
           order.finalize!
         end
 
-        let(:subscription) { Spree::Subscription.where(:magazine_id => order.line_items.first.variant.product.id).first }
+        let(:subscription) { Spree::Subscription.where(:subscribable_product_id => order.line_items.first.variant.product.id).first }
 
         it "should not be created on order completetion" do
           subscription.should be_nil
@@ -150,8 +150,8 @@ describe Spree::Subscription do
           order.payments << create(:payment, :order => order, :amount => order.total)
           # Capture payment
           order.payments.first.capture!
-          magazine = order.line_items.first.variant.product
-          subscription = Spree::Subscription.where(:email => order.user.email, :magazine_id => magazine.id).first
+          subscribable_product = order.line_items.first.variant.product
+          subscription = Spree::Subscription.where(:email => order.user.email, :subscribable_product_id => subscribable_product.id).first
           subscription.state.should == "active"
         end
       end
@@ -161,10 +161,10 @@ describe Spree::Subscription do
           # Create a subscription with same user and prooduct
           user = order.user
           product = order.line_items.first.variant.product
-          Spree::Subscription.create(:email => user.email, :magazine_id => product.id)
+          Spree::Subscription.create(:email => user.email, :subscribable_product_id => product.id)
         end
 
-        let(:subscription) { Spree::Subscription.where(:magazine_id => order.line_items.first.variant.product.id).first }
+        let(:subscription) { Spree::Subscription.where(:subscribable_product_id => order.line_items.first.variant.product.id).first }
 
         context "before order completion" do
           it "should already exists" do
@@ -182,7 +182,7 @@ describe Spree::Subscription do
             order.finalize!
           end
 
-          let(:subscriptions) { Spree::Subscription.where(:magazine_id => order.line_items.first.variant.product.id) }
+          let(:subscriptions) { Spree::Subscription.where(:subscribable_product_id => order.line_items.first.variant.product.id) }
 
           it "should not have to be created as new" do
             subscriptions.count.should == 1

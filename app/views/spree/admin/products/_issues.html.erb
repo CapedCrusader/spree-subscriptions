@@ -1,5 +1,0 @@
-<% if @product.subscribable? %>
-  <li<%== ' class="active"' if current == "Issues" %>>
-    <%= link_to t("issues").titleize, admin_magazine_issues_url(@product) %>
-  </li>
-<% end %>

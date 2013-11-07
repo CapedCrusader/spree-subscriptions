@@ -1,0 +1,5 @@
+<% if @product.subscribable? %>
+  <li<%== ' class="active"' if current == "Subscription_Units" %>>
+    <%= link_to t("subscription_units").titleize, admin_subscribable_product_subscription_units_url(@product) %>
+  </li>
+<% end %>

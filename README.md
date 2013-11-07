@@ -47,7 +47,7 @@ For each subscribable product (and his variants) you can choose the number of is
 To change this default value you can run from the rails console:
 
 ```ruby
-Spree::Subscriptions::Config.set(:default_issues_number, 24)
+Spree::Subscriptions::Config.set(:default_num_subscription_units, 24)
 ```
 
 Use delayed job for email notifications

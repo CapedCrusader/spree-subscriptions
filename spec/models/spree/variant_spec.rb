@@ -2,15 +2,15 @@ require 'spec_helper'
 
 describe Spree::Variant do
   let(:variant) { create(:subscribable_variant) }
-  let(:variant_without_issue_number) { create(:subscribable_variant, :issues_number => "")}
+  let(:variant_without_num_subscription_units) { create(:subscribable_variant, :num_subscription_units => "")}
   let(:base_product_variant) { create(:variant) }
 
-  it "should respond to issues_number" do
-    variant.should respond_to :issues_number
+  it "should respond to num_subscription_units" do
+    variant.should respond_to :num_subscription_units
   end
 
   it "should use default value if not specified" do
-    variant_without_issue_number.issues_number.should == Spree::Subscriptions::Config.default_issues_number
+    variant_without_num_subscription_units.num_subscription_units.should == SpreeSubscriptions::Config.default_num_subscription_units
   end
 
   it "should respond to subscribable? method" do

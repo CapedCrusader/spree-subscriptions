@@ -14,7 +14,7 @@ module Spree
         end
         
         def update
-          if @subscription.update_attributes(params[:subscription])
+          if @subscription.update_attributes(permitted_subscription_attributes)
             flash[:notice] = t('customer_details_updated')
             redirect_to edit_admin_subscription_path(@subscription)
           else
@@ -23,7 +23,17 @@ module Spree
         end
 
         private
-        
+
+        def permitted_subscription_attributes
+          params.require(:subscription).permit(
+                                               :email, 
+                                               :subscribable_product_id, 
+                                               :remaining_subscription_units, 
+                                               :ship_address_attributes => permitted_address_attributes,
+                                               :ship_address => permitted_address_attributes
+                                               )
+        end
+
         def load_subscription
           @subscription = Subscription.find(params[:subscription_id])
         end

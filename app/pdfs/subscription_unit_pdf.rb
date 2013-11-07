@@ -1,4 +1,4 @@
-class IssuePdf < Prawn::Labels
+class SubscriptionUnitPdf < Prawn::Labels
   def initialize(list, view)
     super(list, { :type => "Avery5160" }, &address_layout)
     @view = view

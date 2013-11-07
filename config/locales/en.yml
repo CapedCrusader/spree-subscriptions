@@ -7,29 +7,29 @@ en:
     active: "active"
     canceled: "canceled"
 
-  creating_issue: "Create issue"
+  creating_subscription_unit: "Create subscription unit"
   creating_subscription: "Create subscription"
   customer_details_updated: "The customer's details have been updated"
-  editing_issue: "Edit issue"
+  editing_subscription_unit: "Edit subscription unit"
   editing_subscription: "Edit subscription"
-  issue: "issue"
-  issue_created: "Issue created!"
-  issue_not_created: "Issue not created!"
-  issue_not_shipped: "This issue has already been shipped"
-  issue_not_updated: "Issue not updated!"
-  issue_shipped: "Issue successfully shipped"
-  issue_updated: "Issue updated!"
-  issues: "issues"
-  issues_number: "Issues number"
+  subscription_unit: "subscription unit"
+  subscription_unit_created: "Subscription unit created!"
+  subscription_unit_not_created: "Subscription unit not created!"
+  subscription_unit_not_shipped: "This subscription unit has already been shipped"
+  subscription_unit_not_updated: "Subscription unit not updated!"
+  subscription_unit_shipped: "Subscription unit successfully shipped"
+  subscription_unit_updated: "Subscription unit updated!"
+  subscription_units: "subscription units"
+  num_subscription_units: "Number of subscription units"
 
   # Hack due to this commit https://github.com/spree/spree_auth_devise/commit/ed5b04220dcf2cf9ff500f5a66a0bea7ae81d183
   # still not pushed into a gem. remove when it's done (should be spree_auth_devise 1.2.1)
   login: Login
 
   my_subscriptions: "My subscriptions"
-  new_issue: "New issue"
+  new_subscription_unit: "New subscription unit"
   new_subscription: "New subscription"
-  listing_issues: "Available issues"
+  listing_subscription_units: "Available subscription units"
   listing_subscriptions: "Available subscriptions"
   print: "print"
   shipped_to: "Shipped to"
@@ -46,18 +46,18 @@ en:
 
   activerecord:
     attributes:
-      spree/issue:
+      spree/subscription_unit:
         name: "Name"
         shipped_at: "Shipped at"
       spree/product:
-        issues_number: "Issues number"
+        num_subscription_units: "Number of subscription units"
       spree/subscription:
         created_at: "Created at"
         email: "Email"
         id: "Id"
         name: "Name"
-        remaining_issues: "Remaining Issues"
+        remaining_subscription_units: "Remaining subscription units"
         state: "Status"
         subscribable: "subscription"
       spree/variant:
-        issues_number: "Issues number"
+        num_subscription_units: "Number of subscription units"

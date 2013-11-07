@@ -1,22 +1,22 @@
 FactoryGirl.define do
   factory :subscription, :class => Spree::Subscription do
     # associations:
-    magazine { FactoryGirl.create(:subscribable_product) }
+    subscribable_product { FactoryGirl.create(:subscribable_product) }
     ship_address { FactoryGirl.create(:address) }
-    remaining_issues 4
+    remaining_subscription_units 4
     email "johnny@rocket.com"
   end
 
   factory :paid_subscription, :parent => :subscription do
-    remaining_issues 5
+    remaining_subscription_units 5
   end
 
   factory :ending_subscription, :parent => :subscription do
-    remaining_issues 2
+    remaining_subscription_units 2
   end
 
   factory :ended_subscription, :parent => :subscription do
-    remaining_issues 0
+    remaining_subscription_units 0
   end
 
   factory :customer_address, :class => Spree::Address do

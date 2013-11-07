@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Variant" do
-  context "setting issues number" do
+  context "setting subscription_units number" do
     before do
       @subscribable_product = create(:product, :subscribable => true)
       @variant1, @variant2 = create_variants_for(@subscribable_product)
@@ -9,27 +9,28 @@ describe "Variant" do
       sign_in_as!(user)
     end
 
-    it "should have issue number field if subscribable" do
+    it "should have subscription_unit number field if subscribable" do
       visit spree.admin_path
       click_link "Products"
-      within('table.index tbody tr:nth-child(1)') { click_link "Edit" }
+      within('table.index tbody tr:nth-child(1)') { click_icon :edit }
       click_link "Variants"
-      within('table.index tbody tr:nth-child(1)') { click_link "Edit" }
-      fill_in "Issues number", :with => "24"
+      within('table.index tbody tr:nth-child(1)') { click_icon :edit }
+      fill_in I18n.t(:num_subscription_units), :with => "24"
       click_button "Update"
       page.should have_content "successfully updated"
     end
 
-    it "should not have issue number field if not subscribable" do
+    it "should not have subscription_unit number field if not subscribable" do
       product = create(:product)
       create(:variant, :product => product)
       create(:variant, :product => product)
       visit spree.admin_path
       click_link "Products"
-      within('table.index tbody tr:nth-child(2)') { click_link "Edit" }
+      within('table.index tbody tr:nth-child(2)') { click_icon :edit }
       click_link "Variants"
-      within('table.index tbody tr:nth-child(1)') { click_link "Edit" }
-      page.should_not have_content "Issues number"
+      within('table.index tbody tr:nth-child(1)') { click_icon :edit }
+      save_and_open_page
+      page.should_not have_content I18n.t(:num_subscription_units)
     end
   end
 end
