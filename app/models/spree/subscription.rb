@@ -1,6 +1,8 @@
 class Spree::Subscription < ActiveRecord::Base
   belongs_to :subscribable_product, :class_name => 'Spree::Product'
   belongs_to :ship_address, :class_name => 'Spree::Address'
+  has_many :line_items
+  has_many :orders, through: :line_items
   has_many :shipped_subscription_units
 
   alias_method :shipping_address, :ship_address
@@ -19,7 +21,6 @@ class Spree::Subscription < ActiveRecord::Base
 
   def self.subscribe!(opts)
     opts.to_options!.assert_valid_keys(:email, :ship_address, :subscribable_product, :remaining_subscription_units)
-
     existing_subscription = self.where(:email => opts[:email], :subscribable_product_id => opts[:subscribable_product].id).first
 
     if existing_subscription

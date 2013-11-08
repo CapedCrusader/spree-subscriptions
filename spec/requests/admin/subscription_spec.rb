@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe "Subscription" do
   context "as_admin_user" do
+    let(:subscription) { create(:subscription) }
+
     before do
       user = create(:admin_user, :email => "test@example.com")
       sign_in_as!(user)
@@ -12,11 +14,28 @@ describe "Subscription" do
       visit spree.admin_path
     end
 
+    context "viewing the list of subscriptions" do
+      it "should show the orders associated with this subscription" do
+        order1 = create(:order_with_subscription)
+        ship_address = create(:address)
+        order1.update_column(:ship_address_id, ship_address.id)
+        order1.create_subscriptions
+        order2 = create(:order_with_line_items)  # need to get a ship_address
+        order2.update_column(:email, order1.email)
+        order2.line_items << create(:line_item, :order => order2, :variant => order1.line_items.last.variant)
+        order2.create_subscriptions
+        
+        click_link "Subscriptions"
+        within('table#listing_subscriptions tbody tr:nth-child(1)') do
+          page.should have_content("#{order1.number},#{order2.number}")
+        end
+      end  
+    end
+
     context "editing a subscription" do
-      before(:each) do
+      before do
         create(:product, :name => 'sport subscribable_product', :available_on => '2011-01-06 18:21:13:', :subscribable => true)
         create(:product, :name => 'web subscribable_product', :available_on => '2011-01-06 18:21:13:', :subscribable => true)
-        create(:subscription)
         click_link "Subscriptions"
       end
 

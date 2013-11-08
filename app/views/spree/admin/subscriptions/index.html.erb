@@ -10,6 +10,7 @@
       <th><%= sort_link @search, :email, t(:email, :scope => 'activerecord.attributes.spree/subscription') %></th>
       <th><%= t(:firstname, :scope => 'activerecord.attributes.spree/address') %></th>
       <th><%= t(:lastname, :scope => 'activerecord.attributes.spree/address') %></th>
+      <th><%= t(:orders) %> </th>
       <th data-hook="admin_subscriptions_index_header_actions"></th>
     </tr>
   </thead>
@@ -23,6 +24,7 @@
         <td><%= subscription.email %></td>
         <td><%= subscription.ship_address.firstname %></td>
         <td><%= subscription.ship_address.lastname %></td>
+        <td><%= linked_order_numbers(subscription) %></td>
         <td class="actions" data-hook="admin_subscriptions_index_row_actions">
           <%= link_to_edit subscription, :class => 'edit'  %>
           &nbsp;
