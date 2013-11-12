@@ -5,7 +5,7 @@ Spree::Core::Engine.routes.append do
     end
     resources :products, :as => :subscribable_products do
       resources :subscription_units, :controller => "products/subscription_units"
-      match "subscription_units/:id/ship", :to => "products/subscription_units#ship", :via => :get, :as => :subscription_unit_ship
+      match "subscription_units/:id/ship", :to => "products/subscription_units#ship", :via => :get, :as => :ship_subscription_unit
     end
   end
 end
