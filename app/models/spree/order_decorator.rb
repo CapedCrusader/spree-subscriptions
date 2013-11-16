@@ -8,7 +8,8 @@ module Spree
             :email => self.email, 
             :ship_address => self.ship_address,
             :subscribable_product => line_item.variant.product,
-            :remaining_subscription_units => line_item.variant.num_subscription_units
+            :remaining_subscription_units => line_item.variant.num_subscription_units,
+            :auto_renew => line_item.variant.auto_renew                                                 
           )
           line_item.update_column(:subscription_id, subscription.id)
         end

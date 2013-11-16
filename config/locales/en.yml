@@ -37,6 +37,8 @@ en:
   subscribed: "Subscribed"
   subscription_details: "Subscription Details"
   subscription_ended: "Subscription ended"
+  subscription_renewal_error: "Subscription Renewal Error"
+  subscription_renewal_error_for: "There was a problem with your subscription renewal for %{email}"
   subscription_ended_for: "Subscription for %{email} has ended!"
   subscription_ending: "Subscription ending"
   subscription_ending_for: "Subscription for %{email} is ending!"
@@ -61,3 +63,4 @@ en:
         subscribable: "subscription"
       spree/variant:
         num_subscription_units: "Number of subscription units"
+        recurring: "Recurring"

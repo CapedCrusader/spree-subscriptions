@@ -10,6 +10,7 @@ module Spree
     accepts_nested_attributes_for :subscription_units
 
     delegate_belongs_to :master, :num_subscription_units
+    delegate_belongs_to :master, :auto_renew
 
     scope :subscribable, where(:subscribable => true)
     scope :unsubscribable, where(:subscribable => false)

@@ -13,20 +13,32 @@ class Spree::Subscription < ActiveRecord::Base
 
   scope :eligible_for_shipping, where("remaining_subscription_units >= 1")
   
-  state_machine :state, :initial => 'active' do
+  state_machine :state, :initial => :active do
     event :cancel do
-      transition :to => 'canceled', :if => :allow_cancel?
+      transition :to => :canceled, :if => :allow_cancel?
     end
+
+    after_transition :to => :canceled, :do => :handle_cancel
   end
 
   def self.subscribe!(opts)
-    opts.to_options!.assert_valid_keys(:email, :ship_address, :subscribable_product, :remaining_subscription_units)
+    opts.to_options!.assert_valid_keys(:email, :ship_address, :subscribable_product, :remaining_subscription_units, :auto_renew)
     existing_subscription = self.where(:email => opts[:email], :subscribable_product_id => opts[:subscribable_product].id).first
 
     if existing_subscription
       self.renew_subscription(existing_subscription, opts[:remaining_subscription_units], opts[:ship_address])
     else
-      self.new_subscription(opts[:email], opts[:subscribable_product], opts[:remaining_subscription_units], opts[:ship_address])
+      subscription = self.new_subscription(opts[:email], opts[:subscribable_product], opts[:remaining_subscription_units], opts[:ship_address], opts[:auto_renew])
+=begin
+# maybe we don't use DJ here
+      if subscription.auto_renew?
+        if SpreeSubscriptions::Config.use_delayed_job
+          Spree::SubscriptionRenewer.renew(self)
+        else
+          Rails.logger.error "You are in big trouble man...this isn't going to work unless you use delayed job!!!!!"
+        end
+      end
+=end
     end
   end
 
@@ -60,8 +72,12 @@ class Spree::Subscription < ActiveRecord::Base
         shipped_subscription_units.create(:subscription_unit => subscription_unit)
         update_attribute(:remaining_subscription_units, remaining_subscription_units-1)
 
-        notify_ending! if ending?
-        notify_ended! if ended?
+        if self.auto_renew && ended? && !self.canceled?
+          Spree::SubscriptionRenewer.renew(self)
+        else
+          notify_ending! if ending?
+          notify_ended! if ended?
+        end
       end
     end
   end
@@ -71,17 +87,22 @@ class Spree::Subscription < ActiveRecord::Base
   end
 
   def allow_cancel?
-    self.state != 'canceled'
+    self.auto_renew && self.state != 'canceled'
   end
 
   private
 
-  def self.new_subscription(email, subscribable_product, remaining_subscription_units, ship_address)
+  def handle_cancel
+    # TODO: need to stop the next auto-purchase of another subscription
+  end
+
+  def self.new_subscription(email, subscribable_product, remaining_subscription_units, ship_address, auto_renew)
     self.create do |s|
       s.email            = email
       s.subscribable_product_id      = subscribable_product.id
       s.remaining_subscription_units = remaining_subscription_units
       s.ship_address     = ship_address
+      s.auto_renew = auto_renew
     end
   end
 

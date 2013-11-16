@@ -5,6 +5,11 @@ FactoryGirl.define do
     ship_address { FactoryGirl.create(:address) }
     remaining_subscription_units 4
     email "johnny@rocket.com"
+    
+    after(:create) do |s|
+      line_item = FactoryGirl.create(:line_item, order: FactoryGirl.create(:order_ready_to_ship), variant: s.subscribable_product.master)
+      s.line_items << line_item
+    end
   end
 
   factory :paid_subscription, :parent => :subscription do

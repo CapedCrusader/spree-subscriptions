@@ -3,4 +3,10 @@
     <%= f.label :num_subscription_units %><br />
     <%= f.text_field :num_subscription_units %>
   <% end %>
+
+  <%= f.field_container :auto_renew do %>
+    <%= f.check_box :auto_renew %>
+    <%= f.label :auto_renew, t(:auto_renew, :scope => 'activerecord.attributes.spree/variant') %><br />
+  <% end %>
+
 <% end %>

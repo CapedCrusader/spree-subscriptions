@@ -40,6 +40,19 @@ describe Spree::Subscription do
     let(:subscription) { create(:ending_subscription) }
     let(:subscription_unit) { create(:subscription_unit, :subscribable_product => subscription.subscribable_product) }
 
+    context "auto renew" do
+      before do
+        SpreeSubscriptions::Config.use_delayed_job = false
+        subscription.auto_renew = true
+        subscription.remaining_subscription_units = 1
+      end
+
+      it "auto renews" do
+#        Spree::SubscriptionRenewer.should_receive(:renew).with(subscription)
+        subscription.ship!(subscription_unit)
+      end
+    end
+
     context "without delayed_job" do
       before(:all) do
         SpreeSubscriptions::Config.use_delayed_job = false
@@ -51,10 +64,17 @@ describe Spree::Subscription do
 
       it "should send an email when the subscription is left with one subscription_unit" do
         expect{ subscription.ship!(subscription_unit) }.to change(ActionMailer::Base.deliveries, :count).by(1)
+        ActionMailer::Base.deliveries.first.subject.should eq(I18n.t(:subscription_ending))
       end
 
       it "should send an email when the subscription is left with zero subscription_units" do
+        subscription.remaining_subscription_units = 1
         expect{ subscription.ship!(subscription_unit) }.to change(ActionMailer::Base.deliveries, :count).by(1)
+        ActionMailer::Base.deliveries.first.subject.should eq(I18n.t(:subscription_ended))
+      end
+
+      it "should send an email when there is a problem renewing the subscription" do
+        pending
       end
 
       it "should not resend email when the subscription is already at zero subscription_units" do
