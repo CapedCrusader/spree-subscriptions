@@ -49,7 +49,7 @@ module Spree
         clone_subscription_line_item(new_order.line_items.first, existing_line_item)
         move_order_through_checkout(new_order, existing_line_item.order)
       else
-        # problem TODO
+        raise "Unable to populate new subscription order based on existing subscription: id=#{subscription.id}"
       end
     end
 
@@ -78,6 +78,7 @@ module Spree
 
           Rails.logger.warn "Unable to match selected shipping rates during subscription renewal"
           #TODO: discuss what best course of action here is
+          # the safest is to probably barf so we don't overcharge on a higher rate
         end
       end
 

@@ -29,16 +29,6 @@ class Spree::Subscription < ActiveRecord::Base
       self.renew_subscription(existing_subscription, opts[:remaining_subscription_units], opts[:ship_address])
     else
       subscription = self.new_subscription(opts[:email], opts[:subscribable_product], opts[:remaining_subscription_units], opts[:ship_address], opts[:auto_renew])
-=begin
-# maybe we don't use DJ here
-      if subscription.auto_renew?
-        if SpreeSubscriptions::Config.use_delayed_job
-          Spree::SubscriptionRenewer.renew(self)
-        else
-          Rails.logger.error "You are in big trouble man...this isn't going to work unless you use delayed job!!!!!"
-        end
-      end
-=end
     end
   end
 
@@ -66,6 +56,21 @@ class Spree::Subscription < ActiveRecord::Base
     end
   end
 
+  def notify_renewal_error!(e=nil)
+    error_text = nil
+
+    if e
+      bt = e.backtrace.join("\n")
+      error_text =  "Unable to renew subscription for: id=#{self.id} - exception: #{e.message} - \n#{bt}"
+    end
+
+    if SpreeSubscriptions::Config.use_delayed_job
+      Spree::SubscriptionMailer.delay.subscription_renewal_error_email(self,error_text)
+    else
+      Spree::SubscriptionMailer.subscription_renewal_error_email(self,error_text).deliver
+    end
+  end
+
   def ship!(subscription_unit)
     if !ended? && !shipped?(subscription_unit)
       transaction do
@@ -73,7 +78,13 @@ class Spree::Subscription < ActiveRecord::Base
         update_attribute(:remaining_subscription_units, remaining_subscription_units-1)
 
         if self.auto_renew && ended? && !self.canceled?
-          Spree::SubscriptionRenewer.renew(self)
+          begin
+            Spree::SubscriptionRenewer.renew(self)
+          rescue => e
+            bt = e.backtrace.join("\n")
+            Rails.logger.error "Unable to renew subscription for: id=#{self.id} - exception: #{e.message} - \n#{bt}"
+            notify_renewal_error!(e)
+          end
         else
           notify_ending! if ending?
           notify_ended! if ended?

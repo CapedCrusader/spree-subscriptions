@@ -48,8 +48,21 @@ describe Spree::Subscription do
       end
 
       it "auto renews" do
-#        Spree::SubscriptionRenewer.should_receive(:renew).with(subscription)
+        Spree::SubscriptionRenewer.should_receive(:renew).with(subscription)
         subscription.ship!(subscription_unit)
+      end
+
+      it "should send an email when there is a problem renewing the subscription" do
+        ActionMailer::Base.deliveries = []
+
+        SpreeSubscriptions::Config.set(:renewal_error_email, 'errordude@crap.com')
+        Spree::OrderPopulator.stub(:new).and_return(nil) # force an exception
+        expect{ subscription.ship!(subscription_unit) }.to change(ActionMailer::Base.deliveries, :count).by(1)
+
+        delivery = ActionMailer::Base.deliveries.first
+        delivery.subject.should eq(I18n.t(:subscription_renewal_error))
+        delivery.cc.should include(SpreeSubscriptions::Config.renewal_error_email)
+        delivery.body.should include("Unable to renew subscription")
       end
     end
 
@@ -71,10 +84,6 @@ describe Spree::Subscription do
         subscription.remaining_subscription_units = 1
         expect{ subscription.ship!(subscription_unit) }.to change(ActionMailer::Base.deliveries, :count).by(1)
         ActionMailer::Base.deliveries.first.subject.should eq(I18n.t(:subscription_ended))
-      end
-
-      it "should send an email when there is a problem renewing the subscription" do
-        pending
       end
 
       it "should not resend email when the subscription is already at zero subscription_units" do
