@@ -26,6 +26,8 @@ module Spree
     def self.clone_subscription_line_item(new_line_item, existing_line_item)
       new_order= new_line_item.order
 
+      new_line_item.update_column(:subscription_id, existing_line_item.subscription.id)
+
       if new_line_item.price != existing_line_item.price # has the price changed since they purchased?  If so, stick w/ the old price
         new_line_item.price = existing_line_item.price
         new_line_item.save!
@@ -40,11 +42,11 @@ module Spree
     end
 
     def self.renew(subscription)
-      # create new order basaed on existing order
+      # create new order based on existing order
       new_order = create_new_order_from_subscription(subscription)
       populator = Spree::OrderPopulator.new(new_order, new_order.currency)
-      
       existing_line_item =subscription.line_items.last
+
       if populator.populate(params_for_populator(existing_line_item))
         clone_subscription_line_item(new_order.line_items.first, existing_line_item)
         move_order_through_checkout(new_order, existing_line_item.order)

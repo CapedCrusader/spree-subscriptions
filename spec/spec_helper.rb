@@ -22,11 +22,7 @@ require 'spree/testing_support/url_helpers'
 require 'spree/testing_support/preferences'
 require 'spree/testing_support/capybara_ext'
 
-# include local factories
-Dir["#{File.dirname(__FILE__)}/factories/**/*.rb"].each do |f|
-  fp =  File.expand_path(f)
-  require fp
-end
+require 'spree_subscriptions/factories'
 
 RSpec.configure do |config|
   # Silence Warning

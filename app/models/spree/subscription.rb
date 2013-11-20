@@ -57,8 +57,8 @@ class Spree::Subscription < ActiveRecord::Base
   end
 
   def notify_renewal_error!(e=nil)
-    error_text = nil
 
+    error_text = nil
     if e
       bt = e.backtrace.join("\n")
       error_text =  "Unable to renew subscription for: id=#{self.id} - exception: #{e.message} - \n#{bt}"
