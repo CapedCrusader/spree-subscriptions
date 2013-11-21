@@ -101,6 +101,11 @@ class Spree::Subscription < ActiveRecord::Base
     self.auto_renew && self.state != 'canceled'
   end
 
+  # the most recent line item for the subscription (possibly on account of renewing)
+  def line_item
+    self.line_items.joins(:order).where("spree_orders.state = 'complete'").order("spree_orders.completed_at").last
+  end
+
   private
 
   def handle_cancel
