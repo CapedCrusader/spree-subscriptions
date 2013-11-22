@@ -3,8 +3,8 @@ module Spree
     module Products
       class SubscriptionUnitsController < Spree::Admin::BaseController
         before_filter :load_subscribable_product
-        before_filter :load_subscription_unit, :only => [:show, :edit, :update, :ship]
-        before_filter :load_products, :except => [:show, :index]
+        before_filter :load_subscription_unit, :only => [:show, :edit, :update, :destroy, :ship]
+        before_filter :load_products, :except => [:show, :index, :destroy]
 
         def show
           if @subscription_unit.shipped?
@@ -47,6 +47,16 @@ module Spree
           else
             flash[:error] = t(:subscription_unit_not_created)
             render :new
+          end
+        end
+
+        def destroy
+          if !@subscription_unit.shipped? && @subscription_unit.destroy! 
+            flash[:notice]  = t('subscription_unit_destroyed')
+            redirect_to admin_subscribable_product_path(@subscribable_product)
+          else
+            flash[:error]  = t('subscription_unit_not_destroyed')
+            redirect_to admin_subscribable_product_subscription_units_path(@subscribable_product, @subscription_unit)
           end
         end
 

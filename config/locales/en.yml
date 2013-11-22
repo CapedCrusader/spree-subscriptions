@@ -19,6 +19,8 @@ en:
   subscription_unit_not_updated: "Subscription unit not updated!"
   subscription_unit_shipped: "Subscription unit successfully shipped"
   subscription_unit_updated: "Subscription unit updated!"
+  subscription_unit_destroyed: "Subscription unit has been removed"
+  subscription_unit_not_destroyed: "Subscription unit has not been removed"
   subscription_units: "subscription units"
   num_subscription_units: "Number of subscription units"
 

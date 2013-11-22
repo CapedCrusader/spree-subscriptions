@@ -16,6 +16,9 @@
 
       <p class="form-buttons" data-hook="buttons">
         <%= button t(:create) %>
+        <span class="or"><%= Spree.t(:or) %></span>
+        <%= link_to_with_icon 'icon-remove', Spree.t('actions.cancel'), admin_subscribable_product_subscription_units_path(@subscribable_product), :class => 'button' %>
+
 		  </p>
     <% end %>
   </div>
