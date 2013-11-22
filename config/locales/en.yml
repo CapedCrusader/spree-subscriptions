@@ -15,7 +15,7 @@ en:
   subscription_unit: "subscription unit"
   subscription_unit_created: "Subscription unit created!"
   subscription_unit_not_created: "Subscription unit not created!"
-  subscription_unit_not_shipped: "This subscription unit has already been shipped"
+  subscription_unit_not_shipped: "This subscription unit has not yet been shipped"
   subscription_unit_not_updated: "Subscription unit not updated!"
   subscription_unit_shipped: "Subscription unit successfully shipped"
   subscription_unit_updated: "Subscription unit updated!"
