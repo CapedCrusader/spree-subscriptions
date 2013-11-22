@@ -27,7 +27,7 @@
         <td><%= link_to subscription_unit.name, admin_subscribable_product_subscription_unit_url(@subscribable_product, subscription_unit) %></td>
         <td><%= subscription_unit.shipped? ? subscription_unit.shipped_at.to_s(:db) : t(:subscription_unit_not_shipped) %></td>
         <td class="actions" data-hook="admin_subscription_units_index_row_actions">
-          <%= link_to_with_icon :accept, t(:ship).capitalize, admin_subscribable_product_subscription_unit_ship_path(@subscribable_product, subscription_unit), :confirm => t(:are_you_sure) if !subscription_unit.shipped? %>
+          <%= link_to_with_icon :accept, t(:ship).capitalize, admin_subscribable_product_ship_subscription_unit_path(@subscribable_product, subscription_unit), :confirm => t(:are_you_sure) if !subscription_unit.shipped? %>
           <%= link_to_with_icon :edit,  t(:edit), edit_admin_subscribable_product_subscription_unit_url(@subscribable_product, subscription_unit), :class => 'edit' if !subscription_unit.shipped? %>
         </td>
       </tr>

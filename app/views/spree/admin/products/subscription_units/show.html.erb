@@ -11,7 +11,7 @@
 <% end %>
 
 <div class="toolbar" data-hook="admin_subscription_unit_show_buttons">
-  <%= button_link_to t(:ship), admin_subscribable_product_subscription_unit_ship_path(@product, @subscription_unit), :icon => 'accept', :confirm => t(:are_you_sure) if !@subscription_unit.shipped? %>
+  <%= button_link_to t(:ship), admin_subscribable_product_ship_subscription_unit_path(@product, @subscription_unit), :icon => 'accept', :confirm => t(:are_you_sure) if !@subscription_unit.shipped? %>
   <%= button_link_to t(:print), admin_subscribable_product_subscription_unit_path(@product, @subscription_unit, :format => :pdf), :icon => 'pdf' %>
 </div>
 <br class="clear">
